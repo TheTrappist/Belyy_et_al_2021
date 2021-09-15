@@ -17,7 +17,8 @@ import matplotlib.pylab as plt
 import seaborn as sns
 import parse_trackmate as pt
 
-def read_analysis_params (settings_file, save_dir_reports, print_summary=False):
+def read_analysis_params (settings_file, save_dir_reports=None,
+                                                print_summary=False):
     """Read analysis parameters from JSON settings file.
 
     Args:
@@ -25,7 +26,8 @@ def read_analysis_params (settings_file, save_dir_reports, print_summary=False):
             location of the settings file or absolute.
         save_dir_reports (str): Base directory where reports should be saved.
             This is used to generate individual subfolders using the relative
-            paths stored in the settings file.
+            paths stored in the settings file. If None, no subfolders are
+            generated. Defaults to None.
         print_summary (bool): print some of the key parameters loaded from the
             file. Defaults to False.
 
@@ -44,6 +46,8 @@ def read_analysis_params (settings_file, save_dir_reports, print_summary=False):
                 coefficient. Only used in correlation analysis.
             'save_dir' (path): Base directory for saving results.
             'save_dir_data' (path): Base directory for saving filtered tracks.
+            'raw_json' (dict): the entire contents of the json file with no
+                processing.
     """
 
     # Read the json settings file
@@ -65,8 +69,9 @@ def read_analysis_params (settings_file, save_dir_reports, print_summary=False):
 
     # Build paths for output files
     params = {}
-    save_dir = os.path.join(save_dir_reports, json_data['save_dir_reports'])
-    params['save_dir'] = os.path.normpath(save_dir)
+    if save_dir_reports:
+        save_dir = os.path.join(save_dir_reports, json_data['save_dir_reports'])
+        params['save_dir'] = os.path.normpath(save_dir)
     save_dir_data = os.path.join(base_dir, json_data['save_dir_filt_data'])
     params['save_dir_data'] = os.path.normpath(save_dir_data)
 
@@ -96,8 +101,12 @@ def read_analysis_params (settings_file, save_dir_reports, print_summary=False):
         params['window'] = json_data['window']
         params['pcc_cutoff'] = json_data['pcc_cutoff']
 
+    params['raw_json'] = json_data
+
     if print_summary:
-        print(params)
+        params_to_print = dict(params)
+        params_to_print.pop('raw_json')
+        print(params_to_print)
 
     return conditions, params
 
