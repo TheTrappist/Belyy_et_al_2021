@@ -21,6 +21,9 @@ in the root folder of the repository, titled "SPT_analysis_conda_env.yml".
 - Seaborn (for data visualization): Version 0.9.0. https://seaborn.pydata.org/
 - ImageJ: Version 1.53c (Fiji distribution). https://fiji.sc/
 - TrackMate ImageJ plugin: Version 6.0.2. https://imagej.net/TrackMate/
+  NOTE: Just as this code was being released, a major update to TrackMate (V7)
+  was published. Due to changes in the API, I am providing two versions of the
+  main script, one that works with TrackMate version 6 and one with version 7.
 
 ### Project organization
 The repository is organized into the following top-level folders:
@@ -40,9 +43,16 @@ A. If starting from raw movies:
 1) Download the original TIFF files into the "data/raw" subfolder of the
   repository. Make sure to preserve their folder structure as folders are later
   used to determine which movies correspond to which experimental conditions.
-2) From within FIJI/ImageJ, run the script "Run_2color_TrackMate_analysis.py".
-  This script provides a wrapper for the TrackMate ImageJ plugin and carries out
-  batch tracking of both channels in all two-color movies in a given directory.
+2) From within FIJI/ImageJ, run the script corresponding to your version of
+  the TrackMate plugin. If running TrackMate version 6, use the script
+  "Run_2color_analysis_TrackMate_V6.py" (this is the one I used for the entire
+  project and thoroughly tested). If running the later version 7, use the script
+  "Run_2color_analysis_TrackMate_V7.py". I updated this right before releasing
+  the code to account for changes in the API, but some secondary functions such
+  as spot intensity analysis (not used for any of the figures in the paper) are
+  still broken. Regardless of TrackMate version, this script provides a wrapper
+  for the TrackMate ImageJ plugin and carries out batch tracking of both
+  channels in all two-color movies in a given directory.
 3) In the dialog box that opens when you run the script, set "Directory for
   source files" to the folder where you just downloaded raw movies. "Directory
   to save TrackMate output to" should be set to "data/processed". "File types"
