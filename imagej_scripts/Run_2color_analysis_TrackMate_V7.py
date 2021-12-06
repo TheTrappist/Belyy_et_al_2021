@@ -542,8 +542,9 @@ def run_trackmate(	img_path,
 	# Prepare settings object
 	#------------------------
 
-	settings = Settings()
-	settings.setFrom(imp)
+	#settings = Settings()# worked in TrackMate before version 7
+	#settings.setFrom(imp)# worked in TrackMate before version 7
+	settings = Settings(imp) # works in TrackMate version 7+
 
 	# Configure detector - We use the Strings for the keys
 	settings.detectorFactory = LogDetectorFactory()
