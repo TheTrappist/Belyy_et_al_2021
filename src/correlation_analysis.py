@@ -951,6 +951,80 @@ def pairwise_t_tests (corr_results, statistic_to_test='frac_corr_C1'):
 
     return t_test_summaries
 
+def permutation_test(x, y, num_iter=100):
+    """Get p-value for the differnce in means between x and y by permutation.
+
+    In each iteration, shuffles all data in x and y and reassigns them to
+    datasets of lengths equal to those of x and y. Then, re-calculates the
+    difference in means and determines the fraction of iterations in which the
+    absolute difference is greater than the difference between the means of the
+    original dataset. This fraction is the reported p-value, or in other words
+    an estimate of how often random permutation of the data results in a greater
+    difference than that observed in the actual experiment.
+
+    Args:
+        x (Pandas series): First dataset (1D array of numerical values).
+        y (Pandas series): Second dataset (1D array of numerical values).
+        num_iter (int): number of iterations for calculation of p-value.
+            Defaults to 100.
+
+    Returns:
+        p_val (float): p-value indicating the significance of the difference
+            between the means of datasets x and y (2-tailed).
+    """
+    # Calculate the absolute difference between the means of x and y
+    diff = np.abs(y.mean()-x.mean())
+    n1 = len(x)
+    k = 0
+    conc = np.concatenate((x, y))
+    # Reshuffle the data and re-calculate difference in means many times
+    for i in range(num_iter):
+        np.random.shuffle(conc)
+        k += diff <= np.abs(np.mean(conc[:n1]) - np.mean(conc[n1:]))
+    p_val = k / num_iter
+
+    return p_val
+
+def pairwise_perm_tests (data, col_to_test, by, num_iter=100):
+    """Calculate pairwise significance of difference in means by permutation.
+
+    Separates data in the "data" dataframe into conditions (specified in the
+    "by" column). Then, uses a two-tailed permutation test to compute the
+    p-value to estimate whether the difference in means between each pair of
+    conditions is significant. For details on how this is done, see the
+    description of the permutation_test function.
+
+    Args:
+        data (Pandas dataframe): Any dataframe containing 1D data of interest in
+            one column and the experimental condition in another column.
+        col_to_test (str): Name of the column in "data" containing 1D numerical
+            values that will be used for significance testing.
+        by (str): Name of the column in "data" that will be used for separating
+            data into conditions.
+        num_iter (int): number of iterations for calculation of p-value.
+            Defaults to 100.
+
+    Returns:
+        pairwise_test_summaries (str): Human-readable summary of all pairwise
+            comparisons.
+    """
+    all_conditions = data[by].unique().tolist()
+    c_list = all_conditions.copy()
+    test_summaries = [" ".join(['Pairwise permutation tests, with',str(num_iter),
+                        'iterations\n'])]
+    for cond1 in c_list:
+        all_conditions.remove(cond1)
+        for cond2 in all_conditions:
+            data_in_c1 = data.loc[data[by] == cond1, col_to_test]
+            data_in_c2 = data.loc[data[by] == cond2, col_to_test]
+            test = permutation_test(data_in_c1, data_in_c2, num_iter=num_iter)
+            test = np.format_float_scientific(test, precision=4)
+            test_string = " ".join(['Permutation test between conditions',
+                                    cond1,'and', cond2,':'])
+            test_summaries.append(" ".join([test_string, test, '\n']))
+
+    return test_summaries
+
 
 def test_pearson_corr (window=3, pcc_cutoff=0.95):
     """Debug use only - runs correlation analysis on a pair of dummy tracks.

@@ -282,10 +282,17 @@ def read_2color_data (data_dirs, do_int_analysis=False, int_settings=None):
             spot_num_attr = ['INT_C1_CORR_LOC', 'INT_C2_CORR_LOC',
                              'INT_GLOBAL_C1', 'INT_GLOBAL_C2']
     # Parse tracking data
-    data['parsed'] = ""
+    data['parsed'] = None
     for idx in data.index:
-        a,_,_ = parse_trackmate_file(data['file_path'].loc[idx],
-                                       spot_num_attr=spot_num_attr)
-        data.at[idx, 'parsed'] = a
+        try:
+            a,_,_ = parse_trackmate_file(data['file_path'].loc[idx],
+                                           spot_num_attr=spot_num_attr)
+            data.at[idx, 'parsed'] = a
+        except:
+            data.at[idx, 'parsed'] = None
+            print('No trajectories in file.')
+    
+    # Drop rows that didn't get parsed correctly:
+    data = data.dropna()
 
     return data
