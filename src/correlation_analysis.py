@@ -930,26 +930,33 @@ def pairwise_t_tests (corr_results, statistic_to_test='frac_corr_C1'):
         statistic_to_test (str): Parameter to be tested. Must be a valid key in
             corr_results. Defaults to 'frac_corr_C1'.
     Returns:
-        t_test_summaries (str): Human-readable summary of all pairwise
-            comparisons.
+        test_results (dict): results in several useful formats
+           'text' (str): Human-readable summary of all pairwise comparisons.
+            'df' (Pandas dataframe): a matrix of pairwise p-values
     """
 
     all_conditions = corr_results['Condition'].unique().tolist()
     c_list = all_conditions.copy()
     t_test_summaries = []
+    result_df = pd.DataFrame()
     for cond1 in c_list:
         all_conditions.remove(cond1)
         for cond2 in all_conditions:
             st=statistic_to_test
             data_in_c1 = corr_results[corr_results['Condition'] == cond1][st]
             data_in_c2 = corr_results[corr_results['Condition'] == cond2][st]
-            t_test = str(stats.ttest_ind(data_in_c1, data_in_c2,
-                                        equal_var=False))
+            t_test = stats.ttest_ind(data_in_c1, data_in_c2,
+                                        equal_var=False)
             t_test_string = " ".join(['T-test between conditions',cond1,'and',
                                         cond2,':'])
-            t_test_summaries.append(" ".join([t_test_string, t_test, '\n']))
+            t_test_summaries.append(" ".join([t_test_string, str(t_test), 
+                                    '\n']))
+            result_df.loc[cond1, cond2] = t_test[1]
 
-    return t_test_summaries
+    test_result = {'text' : t_test_summaries,
+                   'df' : result_df}
+
+    return test_result
 
 def permutation_test(x, y, num_iter=100):
     """Get p-value for the differnce in means between x and y by permutation.
@@ -1005,13 +1012,17 @@ def pairwise_perm_tests (data, col_to_test, by, num_iter=100):
             Defaults to 100.
 
     Returns:
-        pairwise_test_summaries (str): Human-readable summary of all pairwise
-            comparisons.
+        test_results (dict): results in several useful formats
+            'text' (str): Human-readable summary of all pairwise comparisons.
+            'df' (Pandas dataframe): a matrix of pairwise p-values
+            
     """
     all_conditions = data[by].unique().tolist()
     c_list = all_conditions.copy()
     test_summaries = [" ".join(['Pairwise permutation tests, with',str(num_iter),
                         'iterations\n'])]
+    
+    result_df = pd.DataFrame()
     for cond1 in c_list:
         all_conditions.remove(cond1)
         for cond2 in all_conditions:
@@ -1022,8 +1033,11 @@ def pairwise_perm_tests (data, col_to_test, by, num_iter=100):
             test_string = " ".join(['Permutation test between conditions',
                                     cond1,'and', cond2,':'])
             test_summaries.append(" ".join([test_string, test, '\n']))
+            result_df.loc[cond1, cond2] = test
 
-    return test_summaries
+    test_result = {'text' : test_summaries,
+                   'df' : result_df}
+    return test_result
 
 
 def test_pearson_corr (window=3, pcc_cutoff=0.95):
