@@ -1,0 +1,22 @@
+{
+    "conditions": {
+        "Condition_1": [
+            "../processed/condition_1/folder_1",
+            "../processed/condition_1/folder_2"
+        ],
+        "Condition_2": [
+            "../processed/condition_2/folder_1",
+            "../processed/condition_2/folder_2"
+        ]
+
+    },
+    "save_dir_reports": "Example_Diffusion_analysis",
+    "save_dir_filt_data": "../processed/filtered_tracks/Example_Diffusion_analysis",
+    "window": 12,
+    "pcc_cutoff": 0.7,
+    "diff_dim": 2,
+    "min_averages_for_msd": 3,
+    "dc_fit_nframes": 7,
+    "frame_interval_sec" : 0.06,
+    "focal_depth_um" : 0.2
+}

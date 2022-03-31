@@ -19,6 +19,7 @@ in the root folder of the repository, titled "SPT_analysis_conda_env.yml".
 - Operating systems: tested on macOS High Sierra and MS Windows 10.
 - Python: Version 3.7.4 (Anaconda dist.). https://www.anaconda.com/distribution/
 - Seaborn (for data visualization): Version 0.9.0. https://seaborn.pydata.org/
+- SASPT (by Alec Heckert): Version 0.2.0. https://github.com/alecheckert/saspt
 - ImageJ: Version 1.53c (Fiji distribution). https://fiji.sc/
 - TrackMate ImageJ plugin: Version 6.0.2. https://imagej.net/TrackMate/
   NOTE: Just as this code was being released, a major update to TrackMate (V7)
@@ -83,7 +84,7 @@ B. If starting from tracks (or after finishing tracking as described above)
 4) Alternatively, you can create your own settings file by modifying the example
   file provided in "data/analysis_settings/
   Correlation_analysis_settings.json_EXAMPLE" (remove "_EXAMPLE" from the end).
-  The organizatin of the JSON settings files is self-explanatory. First, the
+  The organization of the JSON settings files is self-explanatory. First, the
   experimental conditions are listed as a dictionary, with condition name as the
   key and all subfolders containing XML TrackMate files corresponding to that
   condition stored in a list. Relative paths are allowed and encouraged. Then,
@@ -91,9 +92,56 @@ B. If starting from tracks (or after finishing tracking as described above)
   and filtered trajectories. The final two items are "window" and "pcc_cutoff",
   which determine the length of the window in frames and the stringency of
   correlation coefficient required to determine that two tracks are correlated.
-5) If you like, you can change the other settings in the user-definted parameter
+5) If you like, you can change the other settings in the user-defined parameter
   box of the Jupyter notebook, but this should not be necessary.
 6) Run the notebook and wait for it to show you figures. You're done!
+
+C. Reproducing diffusion coefficient analysis  (MSD and state array)
+1) Place all TrackMate XML track files into the "data/processed" subfolder,
+  making sure to preserve their subdirectory structure.
+2) Open the Jupyter notebook "03_SASPT_diffusion_analysis.ipynb" (for
+  state array analysis) or "04_MSD_Diffusion_Analysis.ipynb" (for MSD analysis).
+3) In the first code cell, set the "settings_file" to the location of the JSON
+  settings file containing the settings for the figure you are looking to
+  reproduce.
+4) Alternatively, create your own settings file by using the provided template
+  provided in "data/analysis_settings/
+  SASPT_or_MSD_analysis_settings.json_EXAMPLE" (remove "_EXAMPLE" from the end).
+  The organization of this file is very similar to that used in the previous
+  section for two-color analysis, except for the addition of new parameters:
+  - "diff_dim": dimensionality of diffusion (e.g. 2 for 2D diffusion in the
+    membrane). Used only for MSD analysis.
+  - "dc_fit_nframes": number of frames to fit to a straight line for MSD
+    analysis.
+  - "min_averages_for_msd": minimum number of times that the window specified
+    by "dc_fit_nframes" has to occur in a given trajectory for this trajectory
+    to be included in MSD analysis. Each trajectory is binned into windows that
+    are then averaged together and fit to a straight line. Used only for MSD
+    analysis.
+  - "focal_depth_um": Focal depth of the objective. Only used for state array
+    analysis.
+  - "frame_interval_sec": duration of each frame of the movie (in seconds). Used
+    for both MSD and state array analysis.
+  - ""pcc_cutoff" and "window": not used.
+5) If you like, you can change the other settings in the user-defined parameter
+  box of the Jupyter notebook, but this should not be necessary.
+6) Run the notebook and wait for it to show you figures. You're done!
+
+D. Calibrating the mathematical model for stoichiometry using control data
+1) Open the Jupyter notebook "05_Stoichiometry_modeling.ipynb".
+2) Modify the parameters in the first code cell to point to a result file (which
+  is an output of notebook "01_SPT_stoichiometry_analysis.ipynb") that contains
+  data from different oligomeric controls (i.e. monomers, dimers, and
+  tetramers). Make sure to correctly define the dictionary "standards" so that
+  keys represent different oligomeric states and associated values represent the
+  appropriate condition names.
+3) Run the notebook. It will generate a figure showing your fit and return
+  fit results ("label_eff" and "y_offset").
+4) The last cell can be used to back-calculate the oligomeric state of a protein
+  that has the observed fraction of co-localizers. Simply change the value of
+  "experimental_f_obs" to represent the observed fraction of co-localizing
+  trajectories and re-run the cell.
+
 
 ### Notes
 - The script "plotting_settings.py" in the "src" folder is called at the
