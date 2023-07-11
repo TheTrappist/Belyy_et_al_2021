@@ -563,8 +563,7 @@ def run_trackmate(	img_path,
 
 	# Configure tracker - disable merges and fusions
 	settings.trackerFactory = SparseLAPTrackerFactory()
-	settings.trackerSettings = LAPUtils.getDefaultLAPSettingsMap()
-	#print(LAPUtils.getDefaultLAPSettingsMap())
+	settings.trackerSettings = settings.trackerFactory.getDefaultSettings()
 
 	for key, value in tracker_settings.items():
 		settings.trackerSettings[key] = tracker_settings[key]
