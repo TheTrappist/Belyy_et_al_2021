@@ -35,8 +35,8 @@ from fiji.plugin.trackmate import TrackMate
 from fiji.plugin.trackmate import SelectionModel
 from fiji.plugin.trackmate import Logger
 from fiji.plugin.trackmate.detection import LogDetectorFactory
-from fiji.plugin.trackmate.tracking.sparselap import SparseLAPTrackerFactory
-from fiji.plugin.trackmate.tracking import LAPUtils
+from fiji.plugin.trackmate.tracking.jaqaman import SparseLAPTrackerFactory
+from fiji.plugin.trackmate.tracking.jaqaman import LAPUtils
 from fiji.plugin.trackmate.io import TmXmlWriter
 from fiji.plugin.trackmate.Dimension import INTENSITY, LENGTH
 import fiji.plugin.trackmate.features.ModelFeatureUpdater as ModelFeatureUpdater
