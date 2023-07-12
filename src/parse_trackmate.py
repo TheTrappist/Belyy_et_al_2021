@@ -143,7 +143,8 @@ def parse_trackmate_file (file, load_all_attr=False, spot_num_attr=[]):
     last_spots['track_name'] = edges_df['track_name'].iloc[track_ends].values
     last_spots['spot_ID'] = spots_df['ID'].iloc[track_end_idx].values
     last_spots['t'] = spots_df['FRAME'].iloc[track_end_idx].values
-    tracks_df = tracks_df.append(last_spots, ignore_index=True)
+    #tracks_df = tracks_df.append(last_spots, ignore_index=True) # deprecated
+    tracks_df = pd.concat([tracks_df, last_spots], ignore_index=True)
 
     # Populate the tracks dataframe with spot coordinates
     spot_idx_all = spots_df['ID'].searchsorted(tracks_df['spot_ID'])
